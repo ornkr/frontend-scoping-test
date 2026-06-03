@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ornikar jours de publication</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.2);
+    --text: #1a1a18;
+    --text-2: #6b6b68;
+    --text-3: #a0a09c;
+    --bar-bg: #e8e8e5;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-pill: 999px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 20px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .header-icon {
+    width: 36px; height: 36px;
+    background: #1a5276;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .header-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  h1 { font-size: 17px; font-weight: 600; color: var(--text); letter-spacing: -0.2px; }
+  .subtitle { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .legend-bar {
+    height: 8px;
+    flex: 1;
+    border-radius: 4px;
+    background: linear-gradient(to right, hsl(0,72%,43%), hsl(60,72%,43%), hsl(120,72%,43%));
+  }
+  .legend-label { font-size: 11px; color: var(--text-3); white-space: nowrap; }
+
+  /* CONTROLS */
+  .controls {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 14px;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+  }
+  .search-wrap svg {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; stroke: var(--text-3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    pointer-events: none;
+  }
+  input[type="text"] {
+    width: 100%;
+    height: 38px;
+    padding: 0 12px 0 34px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color .15s;
+  }
+  input[type="text"]:focus { border-color: #1a5276; }
+  input[type="text"]::placeholder { color: var(--text-3); }
+
+  select {
+    height: 38px;
+    padding: 0 10px;
+    border: 0.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  select:focus { border-color: #1a5276; }
+
+  /* CONTENT */
+  .content { padding: 12px 16px 32px; }
+
+  .count {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-bottom: 10px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 15px;
+    margin-bottom: 8px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .dept-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: #eef2f7;
+    color: #4a6785;
+    white-space: nowrap;
+  }
+
+  .center-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .best-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    color: #fff;
+    white-space: nowrap;
+  }
+
+  .day-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .day-label {
+    font-size: 12px;
+    width: 26px;
+    flex-shrink: 0;
+  }
+
+  .bar-wrap {
+    flex: 1;
+    height: 7px;
+    background: var(--bar-bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .pct {
+    font-size: 12px;
+    width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* MORE */
+  .more {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-3);
+    padding: 12px 0 4px;
+  }
+
+  .empty {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-3);
+    padding: 40px 0;
+  }
+
+  @media (min-width: 600px) {
+    header { padding: 24px 32px 0; }
+    .content { padding: 16px 32px 48px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .cards-grid .card { margin-bottom: 0; }
+  }
+
+  @media (min-width: 1000px) {
+    header { padding: 28px 48px 0; }
+    .content { padding: 20px 48px 64px; }
+    .controls { max-width: 700px; }
+    .cards-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <div>
+      <h1>Centres d'examen</h1>
+      <div class="subtitle">Répartition des créneaux par jour de la semaine</div>
+    </div>
+  </div>
+  <div class="legend">
+    <span class="legend-label">Faible</span>
+    <div class="legend-bar"></div>
+    <span class="legend-label">Élevé</span>
+  </div>
+  <div class="controls">
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="q" placeholder="Centre ou n° de département…">
+    </div>
+    <select id="df"></select>
+    <select id="sf">
+      <option value="dept">Par dép.</option>
+      <option value="name">Par nom</option>
+      <option value="best">Meilleur j.</option>
+    </select>
+  </div>
+</header>
+
+<div class="content">
+  <div class="count" id="cnt"></div>
+  <div class="cards-grid" id="lst"></div>
+</div>
+
+<script>
+const DAYS = ['Lun','Mar','Mer','Jeu','Ven','Sam'];
+
+function getColor(v, mx) {
+  if (v === 0) return null;
+  const h = Math.round((v / mx) * 120);
+  return `hsl(${h},72%,43%)`;
+}
+
+const DATA = [
+[1,"AMBERIEU B",27,22,7,15,22,7],[1,"BELLIGNAT B",15,8,16,20,41,0],[1,"LE FOIRAIL B",32,17,23,10,12,6],[1,"MONTLUEL",30,10,20,10,30,0],[1,"BELLEGARDE B",0,0,0,50,50,0],[1,"BOURG DDT B",21,21,18,10,30,0],[1,"GEX B",0,0,100,0,0,0],
+[2,"CHATEAU-THIERRY B",23,31,17,17,12,1],[2,"LAON B",36,21,11,14,14,4],[2,"SAINT-QUENTIN B",25,29,20,11,13,3],[2,"SOISSON B",28,26,20,14,8,2],
+[3,"YZEURE B",12,23,30,14,14,7],[4,"B - MANOSQUE",26,18,16,21,17,3],
+[6,"ANTIBES B",15,21,26,18,15,5],[6,"CANNES B",26,26,12,11,11,14],[6,"GRASSE B",31,23,13,14,15,4],[6,"NICE LES ISCLES B",21,22,19,18,12,7],[6,"NICE VAUBAN B",22,27,0,29,21,1],[6,"MENTON B",67,33,0,0,0,0],
+[8,"CHARLEVILLE EXPO. B",33,27,11,15,13,0],[8,"RETHEL B",23,28,11,22,16,0],[8,"VOUZIERS B",11,29,21,20,20,0],[8,"SEDAN B",100,0,0,0,0,0],
+[9,"FOIX B",0,50,0,50,0,0],
+[10,"ROMILLY SUR SEINE B",3,41,13,31,12,0],[10,"TROYES SAINTE SAVINE",25,23,16,16,9,12],
+[11,"CARCASSONNE B",15,13,21,23,15,14],[11,"CASTELNAUDARY B",0,15,33,28,25,0],[11,"LIMOUX B",25,22,27,25,0,0],[11,"NARBONNE B",26,21,20,15,16,3],
+[12,"RODEZ B",33,33,17,0,17,0],
+[13,"AIX EN PROVENCE B",27,23,20,19,10,2],[13,"ARLES B",27,18,19,18,18,0],[13,"AUBAGNE B",20,25,19,16,20,0],[13,"CEPC VITROLLES",21,22,14,19,12,12],[13,"GARDANNE B",19,25,15,14,15,13],[13,"ISTRES B",18,21,18,19,22,1],[13,"LA CIOTAT B",13,33,19,14,14,8],[13,"MARSEILLE DDTM Aubag",23,22,20,14,11,10],[13,"MARSEILLE ST HENRI",28,23,19,17,12,1],[13,"MARTIGUES B",25,22,12,21,13,7],[13,"SAINT REMY B",11,44,11,0,33,0],[13,"SALON B",20,21,24,22,12,1],[13,"CHATEAURENARD B",0,0,100,0,0,0],[13,"PORT DE BOUC B",30,21,15,21,12,0],[13,"TARASCON B",13,31,25,25,6,0],
+[14,"DEMOUVILLE B",23,21,19,19,16,2],[14,"LISIEUX B",12,33,17,25,13,0],[14,"PONT L EVEQUE B",3,38,29,21,9,0],[14,"BAYEUX B",12,25,14,35,14,0],[14,"CAEN DDTM B ET ETG",4,34,17,21,23,0],[14,"FALAISE B",0,0,0,0,100,0],
+[16,"COGNAC B",16,30,18,19,18,0],[16,"NERSAC B",40,19,17,17,7,0],[16,"BARBEZIEUX B",0,11,33,44,11,0],[16,"CHASSENEUIL B",0,52,30,4,13,0],[16,"RUFFEC B",0,0,0,100,0,0],
+[17,"LA ROCHELLE B",31,17,20,19,12,0],[17,"ROYAN B",29,16,24,12,18,0],[17,"SAINTES B",26,27,14,21,11,0],[17,"ST JEAN D ANGELY B",23,16,35,18,8,0],[17,"JONZAC B",42,33,17,8,0,0],[17,"ROCHEFORT B",28,22,19,19,10,1],[17,"SURGERES B",3,51,13,25,8,0],
+[18,"AUBIGNY SUR NERE B",0,60,0,10,30,0],[18,"BOURGES B",32,29,13,12,15,0],[18,"LA GUERCHE/AUBOIS B",20,0,60,20,0,0],[18,"ST-AMAND MONTROND B",0,0,0,0,100,0],[18,"TROUY B",29,14,20,19,17,1],[18,"VIERZON B",0,0,0,100,0,0],
+[19,"BRIVE B",30,18,22,16,13,1],
+[21,"ARNAY LE DUC B",43,29,14,14,0,0],[21,"LONGVIC B",35,24,13,13,13,3],[21,"BEAUNE B",0,50,0,50,0,0],[21,"DIJON VOLTAIRE",18,18,25,19,20,0],[21,"SAULIEU B",0,0,67,33,0,0],
+[22,"SAINT BRIEUC B",31,20,12,21,15,0],[22,"GUINGAMP B",75,0,25,0,0,0],[22,"LAMBALLE B",26,38,3,0,32,0],[22,"LANNION B",29,12,24,18,18,0],[22,"LOUDEAC B",17,33,17,33,0,0],[22,"PAIMPOL B",0,0,0,0,100,0],
+[24,"BERGERAC B",69,8,8,8,8,0],[24,"MARSAC B",36,20,14,16,14,0],[24,"SARLAT LA CANEDA B",22,13,40,13,11,0],[24,"THIVIERS B",0,25,0,50,25,0],[24,"RIBERAC B",25,50,0,25,0,0],
+[25,"ARBOUANS B",0,47,25,15,14,0],[25,"BAUME LES DAMES B",0,47,13,13,27,0],[25,"BESANCON B",37,18,22,10,13,1],[25,"MORTEAU B",4,46,22,20,9,0],[25,"PONTARLIER B",10,22,35,30,3,0],[25,"AUDINCOURT B",0,67,0,33,0,0],
+[26,"VALENCE AUREATS B",26,23,20,19,11,2],[26,"CREST B",0,0,50,0,50,0],[26,"MONTELIMAR B",23,26,18,27,6,1],[26,"MONTELIMAR MEYROL",23,23,21,21,9,3],[26,"PIERRELATTE B",21,22,12,21,21,3],[26,"ROMANS SUR ISERE",50,0,0,50,0,0],[26,"TOURNON B DROME",15,27,19,21,19,0],
+[27,"BERNAY B",0,0,100,0,0,0],[27,"EVREUX B",17,15,20,15,20,12],[27,"LES ANDELYS B",10,28,23,23,15,0],[27,"LOUVIERS B",31,23,17,12,13,4],[27,"PONT AUDEMER B",26,20,22,22,10,0],[27,"VERNON B",26,26,4,24,21,0],[27,"VERNEUIL/AVRE B",50,0,0,50,0,0],
+[28,"CHATEAUDUN B",0,91,0,9,0,0],[28,"DREUX",37,18,12,6,20,8],[28,"MAINVILLIERS B-A-EC",30,16,22,10,16,7],[28,"NOGENT LE ROTROU B",0,67,0,33,0,0],[28,"JANVILLE B",0,0,0,78,22,0],
+[29,"BREST GUIPAVAS",27,21,18,17,15,2],[29,"GUILERS",20,14,19,25,22,0],[29,"KERNEVEL B",0,100,0,0,0,0],[29,"LANDERNEAU B",0,100,0,0,0,0],[29,"MORLAIX B",24,18,14,25,19,0],[29,"QUIMPER B",40,15,12,20,13,0],[29,"CHATEAULIN B",100,0,0,0,0,0],[29,"LANDIVISIAU B",17,33,33,17,0,0],[29,"LESNEVEN B",0,50,0,0,50,0],[29,"QUIMPERLE B",0,10,70,10,10,0],
+[30,"ALES B",29,14,22,18,16,1],[30,"BAGNOLS SUR CEZE B",24,24,4,28,19,0],[30,"NIMES",20,19,22,19,11,9],[30,"VILLENEUVE LES AVI B",21,27,36,0,15,0],[30,"BEAUCAIRE B",34,24,3,31,7,0],[30,"SOMMIERES B",0,100,0,0,0,0],[30,"UZES B",50,0,0,0,50,0],
+[31,"COLOMIERS B",27,19,20,17,12,4],[31,"LALANDE B",0,0,32,26,24,19],[31,"MURET B",26,25,18,19,11,1],[31,"TOULOUSE DARASSE",15,13,17,11,14,31],[31,"CAZERES B",23,46,23,8,0,0],[31,"LUCHON B",0,0,0,100,0,0],[31,"REVEL B",11,0,33,22,33,0],[31,"SAINT GAUDENS B",13,13,51,5,18,0],[31,"VILLEMUR sur TARN B",22,15,7,32,23,0],
+[32,"AUCH B",18,30,18,23,9,2],[32,"L'ISLE-JOURDAIN B",19,63,6,13,0,0],
+[33,"B BLAYE",15,24,30,17,13,1],[33,"B BRUGES",34,20,16,15,13,1],[33,"B CENON",25,22,21,18,14,0],[33,"B LA TESTE",35,16,20,17,12,0],[33,"B LANGON",24,29,17,17,13,0],[33,"B LESPARRE MEDOC",22,29,19,28,2,0],[33,"B LIBOURNE",31,25,11,16,16,2],[33,"B MERIGNAC",20,23,26,16,13,1],[33,"B VILLENAVE",30,20,16,20,12,2],[33,"B ARTIGUES",17,48,13,16,6,0],[33,"B BIGANOS",17,21,27,19,15,0],
+[34,"B BEZIERS",19,14,14,16,9,28],[34,"B CLERMONT L HERAULT",16,24,1,37,22,0],[34,"B LUNEL",14,17,23,23,23,0],[34,"B MONTPELLIER",24,16,21,16,11,11],[34,"B PEZENAS",15,20,28,21,16,0],[34,"B SETE",14,22,23,23,18,0],[34,"B BEDARIEUX",0,9,45,36,9,0],[34,"B GANGES-CAZILHAC",0,33,33,33,0,0],[34,"B LODEVE",20,40,40,0,0,0],
+[35,"FOUGERES B",9,27,24,19,19,2],[35,"JANZE B",20,24,13,30,14,0],[35,"LE RHEU B",9,58,3,24,6,0],[35,"REDON B",1,25,27,34,13,0],[35,"RENNES OUEST B",32,24,16,16,12,1],[35,"SAINT JACQUES B",37,11,21,17,14,0],[35,"SAINT MALO B",40,18,12,21,9,0],[35,"VITRE B",24,27,24,20,4,0],[35,"COMBOURG B",0,0,50,25,25,0],[35,"DINARD B",25,0,50,25,0,0],[35,"DOL DE BRETAGNE B",7,27,19,21,26,0],[35,"LA GUERCHE BRETA B",0,0,0,0,100,0],
+[36,"ARGENTON/CREUSE B",0,100,0,0,0,0],[36,"DEOLS B",43,8,17,12,15,5],
+[37,"CHINON B",16,45,21,5,14,0],[37,"PARCAY MESLAY B",28,23,14,21,14,0],[37,"AMBOISE B",5,32,32,5,26,0],[37,"CHATEAU-RENAULT B",0,0,100,0,0,0],[37,"LOCHES B",0,78,11,0,11,0],
+[38,"BOURGOIN JALLIEU B",29,25,19,13,12,2],[38,"LA TRONCHE B",32,20,15,15,15,2],[38,"LES ABRETS B",5,44,33,5,13,0],[38,"ROUSSILLON B",9,25,40,11,15,0],[38,"VIENNE B",29,30,20,18,3,0],[38,"VIZILLE B",10,20,17,53,0,0],[38,"VOIRON B",17,21,27,19,16,0],[38,"SAINT MARCELLIN B",0,36,32,20,12,0],
+[39,"CHAMPAGNOLE B",16,18,18,27,22,0],[39,"PERRIGNY B",29,20,27,10,12,1],
+[40,"DAX DDT",32,24,18,12,15,0],[40,"HAGETMAU B",9,9,24,33,24,0],[40,"LABOUHEYRE B",0,50,50,0,0,0],[40,"MACY MDM",32,24,19,15,10,1],
+[41,"ROMORANTIN B",0,35,10,29,26,0],[41,"BLOIS B",6,22,23,27,22,0],[41,"MONTRICHARD B",9,32,14,18,27,0],[41,"VENDOME B",0,0,0,0,100,0],
+[42,"CHAMBON B",29,23,18,15,13,3],[42,"RIVE DE GIER B",18,34,14,28,5,0],[42,"ROANNE B",31,21,21,21,4,1],[42,"MONTBRISON B",25,22,17,15,14,7],
+[43,"MONISTROL B",0,50,0,50,0,0],
+[44,"ANCENIS B",33,22,22,12,11,0],[44,"BOUGUENAIS B",34,23,14,15,14,0],[44,"GORGES B",19,25,26,17,14,0],[44,"JOHARDIERE",30,20,18,16,15,0],[44,"MACHECOUL B",14,41,15,20,10,0],[44,"PONTCHATEAU B",15,32,26,24,3,0],[44,"RIVAUDIERE",26,16,23,16,19,0],[44,"SAINT NAZAIRE B",30,21,18,12,18,0],[44,"BLAIN B",26,29,16,19,10,0],[44,"CHATEAUBRIANT B",20,40,0,40,0,0],
+[45,"FLEURY PARC",35,15,16,15,11,8],[45,"GIEN B",44,3,22,2,18,11],[45,"MONTARGIS B",13,48,3,29,6,1],[45,"OLIVET",24,17,21,19,15,4],[45,"BEAUGENCY B",21,33,12,16,19,0],[45,"PITHIVIERS B",36,26,17,17,4,0],
+[47,"BOE B",30,19,18,16,16,2],[47,"MARMANDE B ET A CIRC",14,20,32,14,16,3],[47,"VILLENEUVE/LOT B - A",18,34,13,26,9,0],
+[49,"CHOLET DESCARTES",29,20,14,20,15,1],[49,"DIXMERAS",27,24,19,18,12,0],[49,"GATIGNOLE",32,18,16,18,16,1],[49,"SEGRE B",16,27,5,31,21,0],[49,"SAUMUR B",27,23,16,18,11,5],
+[50,"AVRANCHES B",16,26,39,0,19,0],[50,"Tourlaville",28,19,13,20,19,0],[50,"VALOGNES B",33,25,20,22,0,0],[50,"COUTANCES B",37,42,11,11,0,0],[50,"SAINT-LO B",31,28,15,13,13,0],[50,"ST-HILAIRE HARCOU B",0,0,0,75,25,0],
+[51,"CHALONS EN CHAMP. B",25,19,20,18,14,4],[51,"REIMS Croix-Blandin",30,18,17,20,10,5],[51,"STE MENEHOULD B",0,14,14,14,57,0],[51,"VITRY LE FRANCOIS B",21,29,6,26,12,6],[51,"EPERNAY B",21,12,23,19,14,12],[51,"SEZANNE B",14,21,7,36,21,0],
+[52,"SAINT DIZIER B",17,23,15,13,13,19],
+[53,"CHATEAU GONTIER B",27,17,15,18,23,0],[53,"LAVAL FERRIE",0,65,26,9,0,0],[53,"EVRON B",0,100,0,0,0,0],[53,"LAVAL MAC DONALD",26,36,8,18,11,0],[53,"MAYENNE B",0,0,100,0,0,0],[53,"VILLAINES LA JUHEL B",12,29,29,18,12,0],
+[54,"LUDRES B",35,25,16,13,9,3],[54,"LUNEVILLE B",29,26,10,18,18,0],[54,"PONT A MOUSSON B",23,23,16,20,19,0],[54,"JARNY GARE",29,29,14,29,0,0],[54,"TOUL B",35,23,8,19,15,0],
+[56,"KERVIGNAC B",8,11,51,14,0,16],[56,"LANESTER B",18,26,18,16,18,5],[56,"VANNES B",20,23,20,22,14,1],[56,"AURAY B",0,50,0,50,0,0],[56,"PLOERMEL B",0,50,10,30,10,0],[56,"PONTIVY B",0,17,50,8,25,0],
+[57,"POUILLY B",28,23,12,25,10,1],[57,"THIONVILLE B",25,24,14,22,16,0],[57,"BOULAY/MOSELLE B",0,75,0,25,0,0],[57,"HAGONDANGE B",15,8,32,28,17,0],[57,"SAINT-AVOLD B",0,50,22,9,19,0],[57,"SARREBOURG B",18,32,12,27,11,0],
+[58,"NEVERS B",30,32,16,10,11,0],[58,"CORBIGNY",0,0,0,0,100,0],
+[59,"DOUAI B",22,22,17,17,14,9],[59,"DUNKERQUE B",30,26,11,22,10,1],[59,"ERQUINGHEM B",16,20,20,20,12,12],[59,"HAZEBROUCK B",21,9,25,16,22,6],[59,"LEZENNES B",31,22,21,13,12,2],[59,"LOMME B",30,23,18,14,10,6],[59,"MAUBEUGE B",23,21,23,17,15,0],[59,"PHALEMPIN B",28,22,25,15,10,0],[59,"PROUVY B",23,23,18,13,12,10],[59,"PROVILLE B",25,26,22,9,17,1],[59,"ROUBAIX B",25,24,20,16,13,3],[59,"TOURCOING B",26,21,21,17,13,3],[59,"AVESNES SUR HELPE B",30,0,20,0,50,0],
+[60,"CLERMONT B",29,29,18,20,4,0],[60,"CREPY EN VALOIS B",13,35,10,26,16,0],[60,"MARGNY LES COMPIEGNE",38,20,12,17,9,4],[60,"MERU B",10,20,28,29,12,0],[60,"MONCHY B",37,22,16,14,11,0],[60,"TILLE B",20,22,20,12,20,6],[60,"NOGENT SUR OISE B",32,17,20,12,18,0],[60,"NOYON",9,5,9,27,50,0],[60,"ST-JUST CHAUSSEE B",17,33,0,33,17,0],
+[61,"ALENCON B",22,21,15,17,23,2],
+[62,"ARRAS B",25,27,21,14,13,0],[62,"BETHUNE B",12,20,25,21,16,6],[62,"BOULOGNE/MER B",25,22,19,20,14,0],[62,"BRUAY LA BUISSIERE B",9,20,26,30,11,5],[62,"CALAIS B",31,26,12,20,10,2],[62,"HENIN B",33,26,14,19,8,0],[62,"LENS B",19,20,26,18,12,4],[62,"LIEVIN B",30,25,14,20,9,1],[62,"SAINT-OMER B",16,19,20,14,31,0],[62,"AIRE SUR LA LYS B",0,44,11,11,22,11],[62,"CARVIN B",50,33,8,8,0,0],[62,"DAINVILLE ARTOIS",17,0,33,17,33,0],[62,"MONTREUIL-MER B",20,24,15,26,15,0],
+[63,"CLER.GANDAILLAT B",22,24,17,18,14,4],
+[64,"HASPARREN B",0,0,40,40,20,0],[64,"LESCAR B",33,21,15,21,9,2],[64,"OLORON STE MARIE B",16,28,26,19,10,0],[64,"ORTHEZ B",4,4,58,27,8,0],[64,"ST JEAN LUZ B",8,23,16,29,23,0],[64,"St Pierre d'Irube",19,24,21,20,16,1],[64,"ANGLET B",21,38,15,0,18,9],[64,"JURANCON B",38,18,24,9,12,0],[64,"MAULEON B",6,35,29,29,0,0],[64,"ST JEAN PIED PORT B",0,100,0,0,0,0],
+[65,"TARBES B",33,22,22,12,10,0],[65,"BAGNERES B",0,0,0,100,0,0],[65,"BORDERES B",0,33,0,44,22,0],[65,"LANNEMEZAN B",50,50,0,0,0,0],[65,"LOURDES B",0,0,67,33,0,0],
+[66,"ARGELES/MER B",35,26,0,20,17,3],[66,"PERPIGNAN SALANQUE",28,22,23,13,11,2],[66,"ILLE SUR TET B",20,27,20,25,9,0],[66,"PRADES B",50,50,0,0,0,0],
+[67,"BARR B",18,18,23,23,18,0],[67,"ERSTEIN B",18,23,36,0,23,0],[67,"HAGUENAU B",27,19,16,21,17,0],[67,"MOLSHEIM B",12,36,27,12,12,0],[67,"SAVERNE B",17,17,30,23,12,0],[67,"SELESTAT B",20,0,30,29,21,0],[67,"STRASBOURG CRONEN B",0,0,33,30,27,9],[67,"SARRE UNION B",0,100,0,0,0,0],[67,"SCHIRMECK B",0,0,33,33,33,0],[67,"WISSEMBOURG B",0,100,0,0,0,0],
+[68,"ALTKIRCH B",18,27,27,19,8,1],[68,"JOSEPH CUGNOT B",33,23,16,16,10,3],[68,"SAINT-CHRISTOPHE B",26,23,17,19,10,5],[68,"THANN B",12,8,8,27,10,35],[68,"GUEBWILLER B",15,36,15,26,0,9],[68,"SAINT-LOUIS B",17,0,0,0,83,0],[68,"SELESTAT B 67",0,56,44,0,0,0],
+[69,"BELLEVILLE B",35,7,33,15,10,0],[69,"DARDILLY",23,24,20,19,15,0],[69,"GIVORS B",24,27,20,12,17,1],[69,"RILLIEUX LA PAPE B",28,16,20,14,8,14],[69,"SAINT PRIEST B",0,0,31,32,28,9],[69,"ST SYMPHORIEN B",17,32,21,9,19,2],[69,"VENISSIEUX B",37,20,15,14,12,2],[69,"VILLEFRANCHE/SAONE B",27,30,17,13,12,2],[69,"TARARE B",0,67,33,0,0,0],
+[70,"VESOUL B",40,35,10,0,15,0],[70,"LUXEUIL LES BAINS B",0,0,0,0,100,0],
+[71,"CHALON/SAONE B",40,15,18,15,10,2],[71,"MACON B",33,22,18,13,14,0],[71,"MONTCEAU LES MINES B",37,13,19,8,22,0],[71,"PARAY LE MONIAL B",1,55,6,39,0,0],[71,"AUTUN B",0,42,17,25,17,0],[71,"LA CLAYETTE B",0,10,60,30,0,0],
+[72,"LA FERTE BERNARD B",0,0,25,75,0,0],[72,"LA FLECHE B",0,11,33,15,41,0],[72,"LE MANS MOLIERE",28,18,17,17,21,0],[72,"LE MANS SUD",17,19,28,19,17,0],[72,"SABLE/SARTHE B",0,27,33,29,12,0],[72,"BEAUMONT/SARTHE B",0,2,17,43,38,0],[72,"CENTRE NORD",17,17,4,31,31,0],[72,"CHATEAU DU LOIR B",0,0,100,0,0,0],[72,"MAMERS B",0,0,0,0,100,0],[72,"SAINT CALAIS B",0,100,0,0,0,0],
+[73,"AIX LES BAINS B",19,29,20,15,17,0],[73,"CHAMBERY B",22,24,21,17,15,1],[73,"ALBERTVILLE B",0,33,0,50,17,0],
+[74,"ANNECY B",27,17,17,17,16,7],[74,"ANNECY B TRAVAUX - EPAGNY",28,28,8,31,0,6],[74,"CLUSES B",20,25,23,20,12,1],[74,"CRANVES SALES B",27,20,22,18,12,1],[74,"THONON LES BAINS B",11,29,27,20,13,0],[74,"ANNECY B TRAVAUX - ARGONAY",32,11,4,43,11,0],[74,"ANNECY B TRAVAUX - JUIN",0,24,24,29,24,0],[74,"LA BERGUE B",20,16,23,24,18,0],[74,"SALLANCHES B",56,11,11,0,22,0],
+[75,"BOBIGNY 75 B",25,20,18,17,14,5],[75,"CRETEIL 75 B",18,20,18,16,14,14],[75,"GENNEVILLIERS 75 B",30,23,19,17,11,0],[75,"MAISONS ALFORT 75 B",22,21,17,16,14,9],[75,"NOISY LE GRAND 75 B YVRIS",31,15,34,10,8,2],[75,"ST LEU B 75",20,20,20,13,21,6],[75,"VILLACOUBLAY B",27,23,21,19,9,2],
+[76,"DIEPPE",23,18,26,17,16,1],[76,"ELBEUF B",13,29,21,22,15,0],[76,"GOURNAY EN BRAY B",0,0,75,13,13,0],[76,"OCTEVILLE-B",24,20,13,22,19,2],[76,"ROUEN RIVE DROITE",19,20,19,20,21,2],[76,"ROUEN RIVE GAUCHE",24,18,16,25,16,1],[76,"YVETOT B",0,0,50,0,50,0],[76,"BARENTIN B",11,11,22,17,39,0],[76,"FECAMP B",33,0,22,11,33,0],[76,"NEUFCHATEL EN BRAY B",22,11,28,17,22,0],
+[77,"AVON B",15,28,23,15,12,8],[77,"COULOMMIERS B",23,19,24,16,15,3],[77,"LAGNY/MARNE",0,20,29,23,20,8],[77,"MEAUX B",32,21,17,14,15,0],[77,"MELUN B",28,17,16,16,17,5],[77,"MONTEREAU B",8,27,12,25,18,9],[77,"NEMOURS B",8,24,21,27,20,1],[77,"PROVINS B",2,32,25,23,9,8],
+[78,"ACHERES B",28,25,14,17,13,3],[78,"MAGNANVILLE B",24,25,19,17,10,5],[78,"RAMBOUILLET B",29,17,18,17,11,7],[78,"ST GERMAIN-EN-LAYE B",22,26,14,18,19,2],[78,"TRAPPES METEO FRANCE",32,20,19,15,10,3],
+[79,"NIORT B",17,30,20,16,14,3],[79,"ST MAIXENT L ECOLE B",13,30,13,27,18,0],[79,"THOUARS B",22,44,11,22,0,0],
+[80,"ALBERT",7,14,36,29,14,0],[80,"AMIENS",24,20,19,13,11,13],[80,"PERONNE",15,21,16,23,19,6],[80,"ABBEVILLE",6,30,15,27,19,4],
+[81,"ALBI B",13,30,18,25,14,0],[81,"GAILLAC B",57,0,7,36,0,0],[81,"CASTRES B",45,16,11,18,10,0],[81,"GRAULHET B",0,57,43,0,0,0],[81,"MAZAMET B",1,15,25,32,27,0],
+[82,"B-CASTEL",26,32,30,1,11,0],[82,"B-CAUSSADE",0,36,30,21,13,0],[82,"B-MONTAUBAN",38,19,23,13,7,0],[82,"B-VALENCE",0,0,53,47,0,0],
+[83,"BRIGNOLES B",18,21,27,19,13,3],[83,"DRAGUIGNAN B",23,18,11,28,12,7],[83,"FREJUS B",37,25,19,2,18,0],[83,"HYERES B",24,22,17,19,13,6],[83,"LA SEYNES/MER B",29,23,18,19,10,1],[83,"SAINT MAXIMIN B",3,17,20,20,17,22],[83,"TOULON STE MUSSE",29,21,13,12,17,9],[83,"SAINTE MAXIME B",50,50,0,0,0,0],
+[84,"APT B",12,22,22,31,12,0],[84,"CARPENTRAS B",25,22,19,17,12,5],[84,"CAVAILLON B",13,31,13,22,22,0],[84,"ORANGE B MARCHE",39,16,20,12,11,1],[84,"PERTUIS B",16,19,20,29,15,2],[84,"SORGUES B",24,24,18,17,15,2],[84,"ORANGE B",21,29,25,11,14,0],
+[85,"CHALLANS B",30,21,21,20,7,0],[85,"FONTENAY LE COMTE B",11,32,25,14,15,2],[85,"LA ROCHE/YON B",25,21,22,18,15,0],[85,"LES SABLES OLONNE B",25,21,19,18,16,0],[85,"LUCON B",16,26,12,19,26,0],[85,"CHANTONNAY B",30,30,10,30,0,0],[85,"LES HERBIERS B",14,19,27,22,18,0],[85,"MONTAIGU B",33,33,33,0,0,0],
+[86,"CIVRAY B",0,8,26,40,26,0],[86,"MONTMORILLON B",0,13,6,25,56,0],[86,"SAINT GEORGES B",41,20,11,15,13,0],[86,"CHATELLERAULT B-FERME",39,21,9,16,14,1],[86,"CHATELLERAULT SOUS PREF B",64,14,6,15,2,0],[86,"LOUDUN B",0,28,4,44,24,0],
+[87,"CHATEAUNEUF FORET B",0,6,31,50,13,0],[87,"LIMOGES BEAUBREUIL",29,19,17,17,13,5],[87,"SAINT JUNIEN B",0,17,45,28,11,0],[87,"ST YRIEIX B",0,67,0,33,0,0],
+[88,"EPINAL B",36,21,19,17,7,0],[88,"REMIREMONT B",34,34,16,3,13,0],
+[89,"AUXERRE B",39,16,13,13,18,0],[89,"JOIGNY B",14,32,6,29,20,0],[89,"SENS B",33,17,21,17,12,0],
+[90,"BELFORT B",29,18,22,17,14,0],[90,"DELLE B",0,100,0,0,0,0],
+[91,"ETAMPES",35,18,17,15,10,4],[91,"EVRY B",38,20,14,16,10,3],[91,"MASSY",31,23,15,16,12,3],[91,"MONTGERON",30,25,16,16,13,1],[91,"VILLABE B",0,35,25,17,18,4],
+[92,"ANTONY B",20,21,16,22,14,7],[92,"ARGENTEUIL B",31,24,16,16,10,3],[92,"CERGY B",32,20,17,16,11,4],[92,"CLAMART B",20,19,16,16,15,14],[92,"GENNEVILLIERS B",22,21,19,18,13,8],[92,"NANTERRE B",23,26,17,20,14,0],
+[93,"BOBIGNY B",34,22,16,16,12,1],[93,"ROSNY/BOIS B",31,20,19,19,10,0],[93,"ST BRICE/FORET B",20,24,23,18,13,2],[93,"VILLEPINTE B",27,23,19,19,12,0],
+[94,"CHENNEVIERES B",26,19,26,14,15,0],[94,"RUNGIS B",33,22,16,14,11,4],
+[95,"BEAUMONT B",9,36,5,40,11,0],[95,"GONESSE B",32,25,15,14,10,3],[95,"PERSAN",4,32,20,34,9,0],
+[971,"ABYMES B",33,22,18,16,12,0],[971,"BASSE TERRE B",46,21,14,12,6,0],
+[972,"SCHOELCHER B",37,20,14,16,13,0],[972,"LAMENTIN B",0,0,100,0,0,0],[972,"RIVIERE SALEE B",0,0,0,100,0,0],[972,"TRINITE B",0,50,50,0,0,0],
+[973,"CAYENNE B",22,24,20,13,13,8],
+[974,"ST BENOIT B",31,18,23,11,18,0],[974,"ST PIERRE B",29,21,17,17,15,0],[974,"ST DENIS B",28,23,21,14,14,1],[974,"ST PAUL B",24,22,15,18,20,0]
+];
+
+const DEPTS = [...new Set(DATA.map(r => r[0]))].sort((a,b) => a-b);
+let SD = null, Q = '', SB = 'dept';
+
+const dfEl = document.getElementById('df');
+dfEl.innerHTML = '<option value="">Tous les départements</option>' +
+  DEPTS.map(d => `<option value="${d}">Dép. ${d}</option>`).join('');
+
+function render() {
+  let rows = DATA.filter(r => {
+    if (SD !== null && r[0] !== SD) return false;
+    if (Q) {
+      const lo = Q.toLowerCase();
+      return r[1].toLowerCase().includes(lo) || String(r[0]).includes(Q);
+    }
+    return true;
+  });
+
+  if (SB === 'name') rows.sort((a,b) => a[1].localeCompare(b[1]));
+  else if (SB === 'best') rows.sort((a,b) => Math.max(...b.slice(2)) - Math.max(...a.slice(2)));
+  else rows.sort((a,b) => a[0]-b[0] || a[1].localeCompare(b[1]));
+
+  document.getElementById('cnt').textContent = `${rows.length} centre${rows.length > 1 ? 's' : ''}`;
+
+  const L = document.getElementById('lst');
+  L.innerHTML = '';
+
+  let prevDept = null;
+
+  rows.forEach(r => {
+    const days = r.slice(2);
+    const mx = Math.max(...days);
+    const bestIdx = days.indexOf(mx);
+
+    if (prevDept !== null && r[0] !== prevDept) {
+      const sep = document.createElement('div');
+      sep.style.cssText = 'grid-column:1/-1;display:flex;align-items:center;gap:10px;margin:6px 0 2px';
+      sep.innerHTML = `<div style="flex:1;height:1px;background:#e0dedd"></div>
+        <span style="font-size:11px;color:#b8b8b3;white-space:nowrap;letter-spacing:.5px;font-weight:500">Dép. ${r[0]}</span>
+        <div style="flex:1;height:1px;background:#e0dedd"></div>`;
+      L.appendChild(sep);
+    }
+    prevDept = r[0];
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    const bestColor = getColor(mx, mx);
+
+    card.innerHTML = `
+      <div class="card-header">
+        <span class="dept-badge">Dép. ${r[0]}</span>
+        <span class="center-name">${r[1]}</span>
+        <span class="best-badge" style="background:${bestColor}">${DAYS[bestIdx]}&nbsp;${mx}%</span>
+      </div>
+      <div>
+        ${DAYS.map((d, i) => {
+          const v = days[i];
+          const color = getColor(v, mx);
+          const fw = v === mx ? 600 : 400;
+          const tc = v === mx ? '#1a1a18' : '#6b6b68';
+          return `<div class="day-row">
+            <span class="day-label" style="font-weight:${fw};color:${tc}">${d}</span>
+            <div class="bar-wrap">
+              <div class="bar-fill" style="width:${v}%;background:${color || '#e8e8e5'}"></div>
+            </div>
+            <span class="pct" style="font-weight:${fw};color:${color || '#a0a09c'}">${v}%</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+
+    L.appendChild(card);
+  });
+
+  if (!rows.length) {
+    L.innerHTML = '<div class="empty">Aucun centre trouvé</div>';
+  }
+}
+
+document.getElementById('q').addEventListener('input', e => { Q = e.target.value; render(); });
+dfEl.addEventListener('change', e => { SD = e.target.value ? parseInt(e.target.value) || null : null; render(); });
+document.getElementById('sf').addEventListener('change', e => { SB = e.target.value; render(); });
+
+render();
+</script>
+</body>
+</html>
