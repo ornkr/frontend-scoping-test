@@ -14,7 +14,7 @@ On veut voir comment tu collabores avec un autre développeur pour cadrer une de
 ## Avant l'entretien (~15 min)
 
 - Caméra et micro pour la visio, et un partage d'écran avec un support sur lequel tu peux écrire ou dessiner.
-- Lis ce README, ouvre le fichier HTML dans `assets/instructor-exam-days.html`, et parcours `CONTEXT.md`.
+- Lis ce README et ouvre le fichier HTML dans `assets/instructor-exam-days.html`.
 
 ## Ton rôle
 
@@ -30,14 +30,13 @@ L'interviewer est là pour te donner du contexte, répondre à tes questions et,
 >
 > Claude m'a aidé à en construire une version plus lisible et plus compréhensible (fichier HTML joint).
 >
-> Ma question : cette page est aujourd'hui en local sur ma machine. Comment pourrait-on rendre cette information accessible aux enseignants depuis l'app mobile native, de façon sécurisée ?
+> Ma question : cette page est aujourd'hui en local sur ma machine. Comment pourrait-on rendre cette information accessible aux enseignants depuis l'app mobile native ?
 >
 > À noter : les données n'ont **pas** besoin d'être mises à jour souvent — seulement chaque trimestre ou semestre.
 
 ## Le contenu du repo
 
 - [`assets/instructor-exam-days.html`](./assets/instructor-exam-days.html) — le fichier joint par le business owner. Ouvre-le dans un navigateur pour voir ce qu'il a produit.
-- [`CONTEXT.md`](./CONTEXT.md) — une note courte sur l'app dans laquelle ça s'intégrerait. À lire avant l'entretien.
 
 ## Ce qu'on attend de toi
 
